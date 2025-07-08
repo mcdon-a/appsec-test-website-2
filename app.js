@@ -1,7 +1,14 @@
 const express = require("express");
+const morganBody = require("morgan-body")
+const bodyParser = require("body-parser")
+
 const app = express();
 const port = process.env.PORT || 3001;
 
+app.use(bodyParser.json());
+
+morganBody(app, {logAllReqHeader:true, maxBodyLength:5000}
+           
 app.get("/", (req, res) => res.type('html').send(html));
 
 const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`));
