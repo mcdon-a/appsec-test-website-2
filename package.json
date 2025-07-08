@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "express": "^5.0.0",
-    "morgan-body":"^2.8.0",
-    "body-parser":"^2.0.2"
+    "morgan-body":"2.8.0",
+    "body-parser":"2.1.0"
   }
 }
