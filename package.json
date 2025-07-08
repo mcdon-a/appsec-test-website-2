@@ -11,8 +11,9 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "body-parser": "2.1.0",
     "express": "^5.0.0",
-    "morgan-body":"2.6.9",
-    "body-parser":"2.1.0"
+    "morgan-body": "2.6.9",
+    "yarn": "^1.22.22"
   }
 }
