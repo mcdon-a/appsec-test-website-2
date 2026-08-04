@@ -24,7 +24,7 @@ body {
   margin: 0;
   overflow-x: hidden;
   color: var(--ink);
-  background: #0b3058;
+  background: #0a2d55;
 }
 
 a {
@@ -54,17 +54,17 @@ a:hover {
 
 .study-banner {
   position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  z-index: 8;
-  padding: 9px 16px;
-  color: #111827;
-  background: #fff4bd;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.18);
-  font-size: 14px;
+  right: 18px;
+  top: 14px;
+  z-index: 9;
+  max-width: min(360px, calc(100vw - 36px));
+  padding: 7px 12px;
+  color: #10243f;
+  background: rgba(255, 244, 189, 0.96);
+  border: 1px solid rgba(117, 87, 0, 0.25);
+  font-size: 12px;
   font-weight: 700;
-  text-align: center;
+  text-align: left;
 }
 
 .scene {
@@ -72,8 +72,8 @@ a:hover {
   inset: 0;
   overflow: hidden;
   background:
-    linear-gradient(90deg, rgba(3, 23, 48, 0.72) 0%, rgba(5, 33, 67, 0.54) 48%, rgba(7, 31, 54, 0.74) 100%),
-    linear-gradient(180deg, #174573 0%, #6fa2bd 58%, #d6e0e4 100%);
+    linear-gradient(90deg, rgba(0, 21, 45, 0.72) 0%, rgba(11, 43, 79, 0.58) 48%, rgba(255, 255, 255, 0) 50%),
+    linear-gradient(180deg, #123f6e 0%, #759eb8 58%, #d7e1e4 100%);
 }
 
 .scene::before,
@@ -88,12 +88,13 @@ a:hover {
 
 .scene::before {
   left: -8vw;
-  width: 62vw;
-  height: 72vh;
+  width: 66vw;
+  height: 74vh;
   background:
-    linear-gradient(115deg, rgba(227, 213, 166, 0.68) 0 14%, transparent 14%),
-    linear-gradient(120deg, #1b3146 0%, #304c5d 42%, #17293a 75%);
-  clip-path: polygon(0 100%, 28% 19%, 48% 0, 72% 42%, 100% 100%);
+    linear-gradient(112deg, rgba(218, 198, 142, 0.58) 0 11%, transparent 11%),
+    repeating-linear-gradient(103deg, rgba(255, 255, 255, 0.06) 0 2px, transparent 2px 18px),
+    linear-gradient(118deg, #172c41 0%, #385467 45%, #12253a 78%);
+  clip-path: polygon(0 100%, 18% 46%, 35% 16%, 49% 0, 68% 41%, 100% 100%);
 }
 
 .scene::after {
@@ -112,7 +113,8 @@ a:hover {
   width: 52vw;
   height: 56vh;
   background:
-    linear-gradient(110deg, rgba(232, 214, 164, 0.55) 0 9%, transparent 10%),
+    linear-gradient(110deg, rgba(232, 214, 164, 0.48) 0 9%, transparent 10%),
+    repeating-linear-gradient(100deg, rgba(255, 255, 255, 0.04) 0 2px, transparent 2px 16px),
     linear-gradient(120deg, #21384d, #4b6472 45%, #162a3e);
   clip-path: polygon(0 100%, 20% 44%, 43% 8%, 64% 0, 100% 100%);
   opacity: 0.86;
@@ -149,7 +151,7 @@ a:hover {
   display: grid;
   width: 50vw;
   min-height: 100vh;
-  padding: 120px 40px 80px;
+  padding: 112px 40px 80px;
   align-content: center;
   justify-items: center;
   color: #ffffff;
@@ -158,53 +160,94 @@ a:hover {
 
 .crest {
   display: grid;
-  width: 88px;
-  height: 110px;
-  margin-bottom: 18px;
+  width: 86px;
+  height: 104px;
+  margin-bottom: 20px;
   align-content: end;
   justify-items: center;
-  padding: 10px 8px 8px;
+  padding: 9px 7px 8px;
   border: 2px solid #ffffff;
-  border-radius: 4px;
-  background: var(--rbc-blue);
+  border-radius: 2px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 38%),
+    var(--rbc-blue);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
 }
 
 .crest strong {
   color: #ffffff;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 31px;
+  font-size: 30px;
   line-height: 1;
   letter-spacing: 0;
 }
 
 .lion {
-  width: 44px;
-  height: 34px;
-  margin-bottom: 5px;
-  border: 5px solid var(--rbc-yellow);
+  position: relative;
+  width: 48px;
+  height: 36px;
+  margin-bottom: 4px;
+  border: 4px solid var(--rbc-yellow);
   border-left-width: 8px;
-  border-radius: 52% 48% 58% 42%;
-  transform: skewX(-14deg) rotate(-9deg);
+  border-bottom-width: 3px;
+  border-radius: 58% 42% 55% 45%;
+  transform: skewX(-16deg) rotate(-10deg);
+}
+
+.lion::before,
+.lion::after {
+  content: "";
+  position: absolute;
+  display: block;
+}
+
+.lion::before {
+  right: -10px;
+  top: 7px;
+  width: 18px;
+  height: 15px;
+  border-right: 4px solid var(--rbc-yellow);
+  border-top: 4px solid var(--rbc-yellow);
+  border-radius: 50%;
+}
+
+.lion::after {
+  left: 12px;
+  top: 8px;
+  width: 22px;
+  height: 12px;
+  border-top: 3px solid var(--rbc-yellow);
+  border-radius: 50%;
+  transform: rotate(20deg);
 }
 
 .brand-panel h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 400;
+  line-height: 1.25;
 }
 
 .brand-panel p {
-  margin: 8px 0 0;
-  font-size: 18px;
+  margin: 7px 0 0;
+  font-size: 16px;
 }
 
 .login-panel {
   width: 50vw;
   min-height: 100vh;
   margin-left: 50vw;
-  padding: 68px min(9vw, 120px) 170px;
-  background: rgba(255, 255, 255, 0.96);
+  padding: 68px min(9.375vw, 120px) 170px;
+  background: #ffffff;
+}
+
+.utility-row {
+  display: flex;
+  width: min(100%, 400px);
+  min-height: 20px;
+  margin: -40px 0 40px;
+  justify-content: flex-end;
+  font-size: 14px;
 }
 
 .form-card {
@@ -214,12 +257,12 @@ a:hover {
 
 .field-row {
   position: relative;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .field-row label {
   display: block;
-  margin-bottom: 7px;
+  margin-bottom: 8px;
   color: #333b45;
   font-size: 16px;
   font-weight: 400;
@@ -230,8 +273,8 @@ a:hover {
   display: block;
   width: 100%;
   height: 48px;
-  padding: 0 14px;
-  border: 1px solid var(--line);
+  padding: 0 13px;
+  border: 1px solid #6f7b87;
   border-radius: 0;
   color: var(--ink);
   background: #ffffff;
@@ -251,7 +294,7 @@ a:hover {
 
 .field-error {
   min-height: 20px;
-  margin: 6px 0 0;
+  margin: 7px 0 0;
   color: var(--error);
   font-size: 14px;
 }
@@ -259,12 +302,16 @@ a:hover {
 .security-link {
   position: absolute;
   right: 0;
-  top: 0;
+  top: -2px;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  max-width: 174px;
+  gap: 7px;
   color: var(--rbc-blue);
-  font-size: 13px;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.15;
+  text-align: right;
 }
 
 .security-link::before {
@@ -272,6 +319,7 @@ a:hover {
   display: inline-block;
   width: 22px;
   height: 22px;
+  flex: 0 0 auto;
   border-radius: 50%;
   background:
     linear-gradient(135deg, transparent 43%, #ffffff 44% 55%, transparent 56%),
@@ -281,7 +329,7 @@ a:hover {
 .save-row {
   display: flex;
   min-height: 30px;
-  margin: 4px 0 16px;
+  margin: 7px 0 14px;
   align-items: center;
   gap: 8px;
   color: #344054;
@@ -289,8 +337,8 @@ a:hover {
 }
 
 .save-row input {
-  width: 16px;
-  height: 16px;
+  width: 13px;
+  height: 13px;
   margin: 0;
   accent-color: var(--rbc-blue);
 }
@@ -301,8 +349,8 @@ a:hover {
 
 .help-button {
   display: inline-grid;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   margin-left: 2px;
   place-items: center;
   border: 1px solid var(--rbc-blue);
@@ -320,7 +368,7 @@ a:hover {
   place-items: center;
   border: 0;
   border-radius: 0;
-  color: #10243f;
+  color: #1f2933;
   background: var(--rbc-yellow);
   font: inherit;
   font-weight: 700;
@@ -338,14 +386,15 @@ a:hover {
 
 .panel-links {
   display: grid;
-  gap: 17px;
-  margin-top: 26px;
+  gap: 16px;
+  margin-top: 24px;
+  font-size: 15px;
 }
 
 .signin-context {
   display: flex;
   min-height: 28px;
-  margin-bottom: 12px;
+  margin-bottom: 9px;
   align-items: center;
   gap: 13px;
 }
@@ -357,8 +406,8 @@ a:hover {
 
 .back-link {
   display: inline-block;
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   border-left: 3px solid var(--rbc-blue);
   border-bottom: 3px solid var(--rbc-blue);
   transform: rotate(45deg);
@@ -371,7 +420,7 @@ a:hover {
 .show-password {
   position: absolute;
   right: 9px;
-  top: 33px;
+  top: 34px;
   width: 38px;
   height: 38px;
   border: 0;
@@ -419,7 +468,7 @@ a:hover {
 
 .site-footer {
   width: min(100%, 400px);
-  margin-top: 244px;
+  margin-top: 242px;
   color: #3f4a56;
   font-size: 13px;
   line-height: 1.45;

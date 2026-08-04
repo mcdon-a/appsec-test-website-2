@@ -59,9 +59,7 @@ function renderPage({ step, username = "" }) {
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <div class="study-banner" role="note">
-      UI study clone for testing only. Do not enter real banking credentials.
-    </div>
+    <div class="study-banner" role="note">UI study only - do not enter real banking credentials.</div>
     <div class="scene" aria-hidden="true">
       <div class="mountain mountain-one"></div>
       <div class="mountain mountain-two"></div>
@@ -76,6 +74,9 @@ function renderPage({ step, username = "" }) {
       <p>RBC Online Banking</p>
     </header>
     <main id="main" class="login-panel" aria-labelledby="form-title">
+      <div class="utility-row">
+        <a href="#">Français</a>
+      </div>
       ${content}
       ${renderFooter()}
     </main>
@@ -101,7 +102,7 @@ function renderUsernameStep() {
           <div class="field-row">
             <label id="form-title" for="username">Client Card or Username</label>
             <a class="security-link" href="#" aria-label="RBC Digital Banking Security Guarantee opens in a new tab">
-              Security Guarantee
+              RBC Digital Banking Security Guarantee
             </a>
             <input id="username" name="username" type="text" autocomplete="username" required aria-describedby="username-error" autofocus>
             <p class="field-error" id="username-error" aria-live="polite"></p>
@@ -134,7 +135,7 @@ function renderPasswordStep(username) {
           <div class="field-row password-row">
             <label id="form-title" for="password">Password</label>
             <a class="security-link" href="#" aria-label="RBC Digital Banking Security Guarantee opens in a new tab">
-              Security Guarantee
+              RBC Digital Banking Security Guarantee
             </a>
             <input id="password" name="password" type="password" autocomplete="current-password" required aria-describedby="password-error">
             <button class="show-password" type="button" aria-label="Your password is hidden. Click to display it" aria-pressed="false" data-toggle-password></button>
