@@ -1,13 +1,8 @@
 const cookieBanner = document.querySelector("[data-cookie-banner]");
 const cookieButtons = document.querySelectorAll("[data-accept-cookies]");
-const emailForm = document.querySelector("[data-email-form]");
+const usernameForm = document.querySelector("[data-username-form]");
 const passwordForm = document.querySelector("[data-password-form]");
 const passwordToggle = document.querySelector("[data-toggle-password]");
-
-document.querySelectorAll("[data-field] input").forEach((input) => {
-  syncFieldState(input);
-  input.addEventListener("input", () => syncFieldState(input));
-});
 
 cookieButtons.forEach((button) => {
   button.addEventListener("click", () => {
@@ -15,13 +10,12 @@ cookieButtons.forEach((button) => {
   });
 });
 
-emailForm?.addEventListener("submit", (event) => {
-  const input = emailForm.querySelector("#email");
-  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+usernameForm?.addEventListener("submit", (event) => {
+  const input = usernameForm.querySelector("#username");
 
-  if (!isValid) {
+  if (!input.value.trim()) {
     event.preventDefault();
-    showError(input, "Enter a valid email.");
+    showError(input, "Enter your client card number or username.");
     input.focus();
     return;
   }
@@ -48,15 +42,16 @@ passwordToggle?.addEventListener("click", () => {
 
   input.type = isShowing ? "password" : "text";
   passwordToggle.setAttribute("aria-pressed", String(!isShowing));
-  passwordToggle.setAttribute("aria-label", isShowing ? "Show password" : "Hide password");
+  passwordToggle.setAttribute(
+    "aria-label",
+    isShowing
+      ? "Your password is hidden. Click to display it"
+      : "Your password is displayed. Click to hide it"
+  );
 });
 
-function syncFieldState(input) {
-  input.closest("[data-field]")?.classList.toggle("has-value", input.value.length > 0);
-}
-
 function showError(input, message) {
-  const field = input.closest("[data-field]");
+  const field = input.closest(".field-row");
   const error = document.getElementById(input.getAttribute("aria-describedby"));
 
   field?.classList.add("is-invalid");
@@ -64,7 +59,7 @@ function showError(input, message) {
 }
 
 function clearError(input) {
-  const field = input.closest("[data-field]");
+  const field = input.closest(".field-row");
   const error = document.getElementById(input.getAttribute("aria-describedby"));
 
   field?.classList.remove("is-invalid");
