@@ -47,7 +47,7 @@ if (typeof WebViewFragment === "undefined") {
 + '  }'
 + '}'
 + 'tryBridge(1);'
-+ '<\/script></body></html>';
++ '<\\/script></body></html>';
 
     // --- Step 3: Write stage 2 to disk via DYNAMIC_DOWNLOAD_DOCUMENT ---
     try {
