@@ -26,6 +26,11 @@ xhr.send();
 </html>`);
 });
 
+app.get('/test.txt', function (req, res) {
+  res.type('text/plain');
+  res.send('test');
+});
+
 app.get("/login/identifier", (_req, res) => {
   res.send(renderPage({ step: "identifier" }));
 });
