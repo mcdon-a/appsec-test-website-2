@@ -59,10 +59,8 @@ a {
 }
 
 .eyebrow {
-  margin: 0 0 13px;
   color: var(--muted);
   font-size: 18px;
-  line-height: 1.25;
 }
 
 h1,
