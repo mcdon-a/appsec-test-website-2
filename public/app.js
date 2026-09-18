@@ -1,45 +1,29 @@
-const cookieBanner = document.querySelector("[data-cookie-banner]");
-const cookieButtons = document.querySelectorAll("[data-accept-cookies]");
-const emailForm = document.querySelector("[data-email-form]");
-const passwordForm = document.querySelector("[data-password-form]");
+const loginForm = document.querySelector("[data-login-form]");
 const passwordToggle = document.querySelector("[data-toggle-password]");
 
-document.querySelectorAll("[data-field] input").forEach((input) => {
-  syncFieldState(input);
-  input.addEventListener("input", () => syncFieldState(input));
-});
+loginForm?.addEventListener("submit", (event) => {
+  const username = loginForm.querySelector("#username");
+  const password = loginForm.querySelector("#password");
+  let firstInvalid = null;
 
-cookieButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    cookieBanner?.classList.add("is-hidden");
-  });
-});
-
-emailForm?.addEventListener("submit", (event) => {
-  const input = emailForm.querySelector("#email");
-  const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
-
-  if (!isValid) {
-    event.preventDefault();
-    showError(input, "Enter a valid email.");
-    input.focus();
-    return;
+  if (!username.value.trim()) {
+    showError(username, "Enter a test username.");
+    firstInvalid = firstInvalid || username;
+  } else {
+    clearError(username);
   }
 
-  clearError(input);
-});
-
-passwordForm?.addEventListener("submit", (event) => {
-  const input = passwordForm.querySelector("#password");
-
-  if (!input.value.trim()) {
-    event.preventDefault();
-    showError(input, "Enter your password.");
-    input.focus();
-    return;
+  if (!password.value.trim()) {
+    showError(password, "Enter a test password.");
+    firstInvalid = firstInvalid || password;
+  } else {
+    clearError(password);
   }
 
-  clearError(input);
+  if (firstInvalid) {
+    event.preventDefault();
+    firstInvalid.focus();
+  }
 });
 
 passwordToggle?.addEventListener("click", () => {
@@ -49,14 +33,11 @@ passwordToggle?.addEventListener("click", () => {
   input.type = isShowing ? "password" : "text";
   passwordToggle.setAttribute("aria-pressed", String(!isShowing));
   passwordToggle.setAttribute("aria-label", isShowing ? "Show password" : "Hide password");
+  passwordToggle.querySelector("span").textContent = isShowing ? "Show" : "Hide";
 });
 
-function syncFieldState(input) {
-  input.closest("[data-field]")?.classList.toggle("has-value", input.value.length > 0);
-}
-
 function showError(input, message) {
-  const field = input.closest("[data-field]");
+  const field = input.closest(".field-row");
   const error = document.getElementById(input.getAttribute("aria-describedby"));
 
   field?.classList.add("is-invalid");
@@ -64,7 +45,7 @@ function showError(input, message) {
 }
 
 function clearError(input) {
-  const field = input.closest("[data-field]");
+  const field = input.closest(".field-row");
   const error = document.getElementById(input.getAttribute("aria-describedby"));
 
   field?.classList.remove("is-invalid");
