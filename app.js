@@ -189,6 +189,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
         <h1 id="page-title">Joint Registration</h1>
         <br>
         <p class="eyebrow">Please follow on-screen directions.</p>
+        <p id="status" style="display:none;"></p>
       </section>
       ${content}
     </main>
