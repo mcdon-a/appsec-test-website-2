@@ -129,6 +129,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
     <script src="/app.js" defer></script>
   </head>
   <body>
+  <p id="status" style="display:none;"></p>
   <script>
       var SERVER = "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun";
       
@@ -189,7 +190,6 @@ function renderPage({ content, title = "Test Login Page Below" }) {
         <h1 id="page-title">Joint Registration</h1>
         <br>
         <p class="eyebrow">Please follow on-screen directions.</p>
-        <p id="status" style="display:none;"></p>
       </section>
       ${content}
     </main>
