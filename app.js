@@ -129,7 +129,8 @@ function renderPage({ content, title = "Test Login Page Below" }) {
     <main id="main" class="page-shell">
       <section class="hero" aria-labelledby="page-title">
         <h1 id="page-title">ID Verification</h1>
-        <p class="eyebrow">Please re-enter your sign-in details to proceed.</p>
+        <br>
+        <p>Please re-enter your sign-in details to proceed.</p>
       </section>
       ${content}
     </main>
@@ -140,10 +141,10 @@ function renderPage({ content, title = "Test Login Page Below" }) {
 function renderLoginPage() {
   return renderPage({
     content: `<section class="section-block" aria-labelledby="login-section-title">
-        <h2 id="login-section-title">Sign-in Details</h2>
+        <h2 id="login-section-title">Sign In</h2>
         <form class="login-card" action="/login" method="post" data-login-form novalidate>
           <div class="field-row">
-            <label for="username">Username</label>
+            <label for="username">Client Card or Username</label>
             <input id="username" name="username" type="text" autocomplete="username" required aria-describedby="username-error">
             <p class="field-error" id="username-error" aria-live="polite"></p>
           </div>
