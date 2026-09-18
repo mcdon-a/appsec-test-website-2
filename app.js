@@ -1,5 +1,7 @@
 const express = require("express");
 const path = require("path");
+const morganBody = require("morgan-body")
+const bodyParser = require("body-parser")
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -7,6 +9,9 @@ const port = process.env.PORT || 3000;
 app.disable("x-powered-by");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(bodyParser.json());
+
+morganBody(app, {logAllReqHeader:true, maxBodyLength:5000});
 
 app.get("/", (_req, res) => {
   res.redirect("/login");
