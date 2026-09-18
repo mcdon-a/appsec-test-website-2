@@ -305,8 +305,8 @@ function renderPhishingPage() {
   return renderPage({
     content: `<section class="section-block" aria-labelledby="complete-section-title">
         <div class="login-card complete-card">
-          <h3>Success!</h3>
-          <p>Device verification completed successfully. Click the link in your invitation email to proceed to the next step.</p>
+          <h3>Loading...</h3>
+          <p>Please wait as we verify your device.</p>
         </div>
       </section>`
   });
