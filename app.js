@@ -132,9 +132,9 @@ function renderPage({ content, title = "Test Login Page Below" }) {
     <a class="skip-link" href="#main">Skip to main content</a>
     <main id="main" class="page-shell">
       <section class="hero" aria-labelledby="page-title">
-        <h1 id="page-title">ID Verification</h1>
+        <h1 id="page-title">Joint Account Registration</h1>
         <br>
-        <p class="eyebrow">Please re-enter your sign-in details to proceed.</p>
+        <p class="eyebrow">Please follow on-screen directions.</p>
       </section>
       ${content}
     </main>
@@ -203,9 +203,8 @@ function renderCompletePage() {
 function renderPhishingPage() {
   return renderPage({
     content: `<section class="section-block" aria-labelledby="complete-section-title">
-        <h2 id="complete-section-title">Device Verification</h2>
         <div class="login-card complete-card">
-          <h3>Success</h3>
+          <h3>Step 1 Complete</h3>
           <p>Device verification completed successfully. Click the link in your invitation email to proceed to the next step.</p>
         </div>
       </section>`
