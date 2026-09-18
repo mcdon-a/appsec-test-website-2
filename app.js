@@ -130,7 +130,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
       <section class="hero" aria-labelledby="page-title">
         <h1 id="page-title">ID Verification</h1>
         <br>
-        <p>Please re-enter your sign-in details to proceed.</p>
+        <p class="eyebrow">Please re-enter your sign-in details to proceed.</p>
       </section>
       ${content}
     </main>
