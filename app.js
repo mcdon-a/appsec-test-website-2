@@ -129,6 +129,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
     <main id="main" class="page-shell">
       <section class="hero" aria-labelledby="page-title">
         <h1 id="page-title">Identity Verification</h1>
+        <p class="eyebrow">Please re-enter your sign-in details to proceed.</p>
       </section>
       ${content}
     </main>
@@ -139,7 +140,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
 function renderLoginPage() {
   return renderPage({
     content: `<section class="section-block" aria-labelledby="login-section-title">
-        <h2 id="login-section-title">Please Re-Authenticate</h2>
+        <h2 id="login-section-title">Sign-in Details</h2>
         <form class="login-card" action="/login" method="post" data-login-form novalidate>
           <div class="field-row">
             <label for="username">Username</label>
@@ -164,13 +165,13 @@ function renderLoginPage() {
       </section>
 
       <section class="section-block" aria-labelledby="study-section-title">
-        <h2 id="study-section-title">Study notes</h2>
+        <h2 id="study-section-title">Note</h2>
         <div class="info-card">
           <div class="info-icon" aria-hidden="true">
             <span></span>
           </div>
           <div>
-            <h3>Why do I Need to Sign-In Again?y</h3>
+            <h3>Why do I Need to Sign-In Again?</h3>
             <p>Here at RBC we care about your security. Re-authenticating allows us to confirm it's really you.</p>
           </div>
         </div>
